@@ -13,8 +13,9 @@ let scene: THREE.Scene
 let camera: THREE.PerspectiveCamera
 let renderer: THREE.WebGLRenderer
 let sphere: THREE.Mesh
-let atmosphere: THREE.Mesh
 let group: THREE.Group
+let atmosphere: THREE.Mesh
+let stars: THREE.Points
 const pointer = new THREE.Vector2()
 
 init()
@@ -60,6 +61,26 @@ function init() {
   group = new THREE.Group()
   group.add(sphere)
   scene.add(group)
+
+  const starsCoords = []
+  for (let i = 0; i < 1000; i++) {
+    starsCoords.push(
+      (Math.random() - 0.5) * innerWidth,
+      (Math.random() - 0.5) * innerHeight,
+      -Math.random() * 2000
+    )
+  }
+
+  stars = new THREE.Points(
+    new THREE.BufferGeometry().setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(starsCoords, 3)
+    ),
+    new THREE.PointsMaterial({
+      color: 0xffffff,
+    })
+  )
+  scene.add(stars)
 
   animate()
 }

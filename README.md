@@ -6,3 +6,4 @@
 - [x] Fragment Shader
 - [x] Atmosphere effect with shader
 - [x] Mouse movement interaction
+- [x] Add stars on background
