@@ -1,5 +1,7 @@
 # threejs-globe
 
+![Screen record](/assets/screen.gif)
+
 - [x] Map texture on sphere
 - [x] Sharpen rendering
 - [x] Vertex Shader

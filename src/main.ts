@@ -17,20 +17,27 @@ let group: THREE.Group
 let atmosphere: THREE.Mesh
 let stars: THREE.Points
 const pointer = new THREE.Vector2()
+const canvas = document.querySelector('canvas') as HTMLCanvasElement
 
 init()
 
 function init() {
   scene = new THREE.Scene()
-  camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000)
+  camera = new THREE.PerspectiveCamera(
+    75,
+    (0.5 * innerWidth) / innerHeight,
+    0.1,
+    1000
+  )
   camera.position.z = 15
 
   renderer = new THREE.WebGLRenderer({
     antialias: true,
+    canvas,
   })
-  renderer.setSize(innerWidth, innerHeight)
+
+  renderer.setSize(0.5 * innerWidth, innerHeight)
   renderer.setPixelRatio(devicePixelRatio)
-  document.body.appendChild(renderer.domElement)
 
   sphere = new THREE.Mesh(
     new THREE.SphereGeometry(5, 50, 50),
@@ -102,3 +109,10 @@ function onPointerMove(event: MouseEvent) {
   pointer.x = (event.clientX / window.innerWidth) * 2 - 1
   pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
 }
+
+addEventListener('resize', () => {
+  renderer.setSize(0.5 * window.innerWidth, window.innerHeight)
+  camera.aspect = (0.5 * window.innerWidth) / window.innerHeight
+  camera.updateProjectionMatrix()
+  renderer.render(scene, camera)
+})
