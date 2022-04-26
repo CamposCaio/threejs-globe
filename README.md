@@ -1,6 +1,8 @@
 # threejs-globe
 
 - [x] Map texture on sphere
-- [ ] Sharpen rendering
-- [ ] Atmosphere effect with shader
-- [ ] Mouse movement interaction
+- [x] Sharpen rendering
+- [x] Vertex Shader
+- [x] Fragment Shader
+- [x] Atmosphere effect with shader
+- [x] Mouse movement interaction

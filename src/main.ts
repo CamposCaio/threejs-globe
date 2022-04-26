@@ -1,36 +1,83 @@
 import * as THREE from 'three'
+// @ts-ignore
+import vertexShader from '../shaders/vertex.glsl'
+// @ts-ignore
+import fragmentShader from '../shaders/fragment.glsl'
+// @ts-ignore
+import atmosphereVertexShader from '../shaders/atmosphereVertex.glsl'
+// @ts-ignore
+import atmosphereFragmentShader from '../shaders/atmosphereFragment.glsl'
+import gsap from 'gsap'
 
-const scene = new THREE.Scene()
-const camera = new THREE.PerspectiveCamera(
-  75,
-  innerWidth / innerHeight,
-  0.1,
-  1000
-)
-camera.position.z = 10
-
-const renderer = new THREE.WebGLRenderer()
+let scene: THREE.Scene
+let camera: THREE.PerspectiveCamera
+let renderer: THREE.WebGLRenderer
+let sphere: THREE.Mesh
+let atmosphere: THREE.Mesh
+let group: THREE.Group
+const pointer = new THREE.Vector2()
 
 init()
 
 function init() {
+  scene = new THREE.Scene()
+  camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000)
+  camera.position.z = 15
+
+  renderer = new THREE.WebGLRenderer({
+    antialias: true,
+  })
   renderer.setSize(innerWidth, innerHeight)
+  renderer.setPixelRatio(devicePixelRatio)
   document.body.appendChild(renderer.domElement)
 
-  const sphere = new THREE.Mesh(
+  sphere = new THREE.Mesh(
     new THREE.SphereGeometry(5, 50, 50),
-    new THREE.MeshBasicMaterial({
-      // color: 0xff0000,
-      map: new THREE.TextureLoader().load('../assets/planet-map.jpg'),
+    new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      uniforms: {
+        planetTexture: {
+          value: new THREE.TextureLoader().load('../assets/planet-map.jpg'),
+        },
+      },
     })
   )
 
-  scene.add(sphere)
+  atmosphere = new THREE.Mesh(
+    new THREE.SphereGeometry(5, 50, 50),
+    new THREE.ShaderMaterial({
+      vertexShader: atmosphereVertexShader,
+      fragmentShader: atmosphereFragmentShader,
+      blending: THREE.AdditiveBlending,
+      side: THREE.BackSide,
+    })
+  )
+
+  atmosphere.scale.set(1.2, 1.2, 1.2)
+  scene.add(atmosphere)
+
+  group = new THREE.Group()
+  group.add(sphere)
+  scene.add(group)
 
   animate()
 }
 
 function animate() {
   requestAnimationFrame(animate)
+  sphere.rotation.y += 0.002
+  gsap.to(group.rotation, {
+    x: -pointer.y * 0.25,
+    y: pointer.x * 0.5,
+    duration: 2,
+  })
   renderer.render(scene, camera)
+}
+
+addEventListener('mousemove', onPointerMove)
+
+function onPointerMove(event: MouseEvent) {
+  pointer.x = (event.clientX / window.innerWidth) * 2 - 1
+  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
 }
